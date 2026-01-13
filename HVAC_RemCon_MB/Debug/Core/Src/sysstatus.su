@@ -1,4 +1,4 @@
-../Core/Src/sysstatus.c:46:6:SysStatus_Init	64	static
-../Core/Src/sysstatus.c:91:6:LEDs_SetSystemState	16	static
-../Core/Src/sysstatus.c:103:6:LED_Comms_Trigger	8	static
-../Core/Src/sysstatus.c:113:6:LEDs_Process	8	static
+../Core/Src/sysstatus.c:48:6:SysStatus_Init	64	static
+../Core/Src/sysstatus.c:94:6:LEDs_SetSystemState	16	static
+../Core/Src/sysstatus.c:115:6:LED_Comms_Trigger	8	static
+../Core/Src/sysstatus.c:125:6:LEDs_Process	8	static

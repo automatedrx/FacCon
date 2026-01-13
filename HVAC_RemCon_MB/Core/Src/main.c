@@ -120,13 +120,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   	  SysStatus_Init(&htim1, &hspi3);
-  	  //LEDs_Init();
-//  	  SysStatus_Init_WithLCD(LED_STATUS_T1C1_GPIO_Port, LED_STATUS_T1C1_Pin, GPIO_PIN_SET,
-//  			  LED_COMM_T1C2_GPIO_Port, LED_COMM_T1C2_Pin, GPIO_PIN_SET,
-//			  LED_ALARM_T1C3_GPIO_Port, LED_ALARM_T1C3_Pin, GPIO_PIN_SET,
-//			  LCD_BL_T1C4_GPIO_Port, LCD_BL_T1C4_Pin, GPIO_PIN_SET, &hspi3,
-//			  LCD_NCS_GPIO_Port, LCD_NCS_Pin, LCD_AO_GPIO_Port, LCD_AO_Pin,
-//			  LCD_NRST_GPIO_Port, LCD_NRST_Pin);
   	  LEDs_SetSystemState(SYSTEM_STATE_BOOT);
   	  IO_Core_Init(&hadc1);
   	  ModbusTCP_Init();

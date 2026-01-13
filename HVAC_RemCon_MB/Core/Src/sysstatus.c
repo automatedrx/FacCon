@@ -9,11 +9,11 @@ TIM_HandleTypeDef* htimStatus = NULL;
 #define TIM_CHAN_LCDBL 		TIM_CHANNEL_4
 
 uint8_t onVal_StatusLed = 10;		//Max brightness val
-uint8_t onVal_CommLed	= 10;
+uint8_t onVal_CommLed	= 30;
 uint8_t onVal_AlarmLed	= 10;
 uint8_t onVal_LcdBl		= 50;
 
-uint8_t curVal_StatusLed 	= 0;	//Currentt val; either 0 (off) or onVal_x (on)
+uint8_t curVal_StatusLed 	= 0;	//Current val; either 0 (off) or onVal_x (on)
 uint8_t curVal_CommLed		= 0;
 uint8_t curVal_AlarmLed		= 0;
 uint8_t curVal_LcdBl		= 50;
@@ -38,10 +38,12 @@ LCD_HandleTypeDef lcd;
 const GFXfont *fontBig				= &Dialog_plain_24;
 const GFXfont *fontStatusbar		= &Dialog_plain_10NarRssi;
 
-static SystemState_t current_state = SYSTEM_STATE_BOOT;
+static SystemState_t current_state = SYSTEM_STATE_UNKNOWN;
 static uint32_t system_blink_tick = 0;
 static uint32_t comms_blink_start = 0;
-static uint8_t comms_led_active = 0;
+static uint8_t comms_led_active = 1;
+
+static uint8_t alarm_led_active = 1;
 
 void SysStatus_Init(TIM_HandleTypeDef* hTimerHandle, SPI_HandleTypeDef* hLcdSpiHandle){
 
@@ -52,10 +54,11 @@ void SysStatus_Init(TIM_HandleTypeDef* hTimerHandle, SPI_HandleTypeDef* hLcdSpiH
 	pCCR_Alarm = &htimStatus->Instance->CCR3;
 	pCCR_LcdBl = &htimStatus->Instance->CCR4;
 
-	*pCCR_Status = curVal_StatusLed;
-	*pCCR_Comm = curVal_CommLed;
-	*pCCR_Alarm = curVal_AlarmLed;
-	*pCCR_LcdBl = curVal_LcdBl;
+	//Turn on all led's at startup
+	*pCCR_Status = onVal_StatusLed;
+	*pCCR_Comm = onVal_CommLed;
+	*pCCR_Alarm = onVal_AlarmLed;
+	*pCCR_LcdBl = onVal_LcdBl;
 
 	HAL_TIM_Base_Start(htimStatus);
 	HAL_TIM_PWM_Start(htimStatus, TIM_CHAN_STATUSLED);
@@ -80,7 +83,7 @@ void SysStatus_Init(TIM_HandleTypeDef* hTimerHandle, SPI_HandleTypeDef* hLcdSpiH
 	ST7735_SetCursor(&lcd, (160-tmpW)/2 , 10 + tmpH + 10 + tmpH);
 	ST7735_Print(&lcd, DISPLAY_VER);
 
-	current_state = SYSTEM_STATE_BOOT;
+	current_state = SYSTEM_STATE_UNKNOWN;
 	system_blink_tick = HAL_GetTick();
 	comms_blink_start = 0;
 	comms_led_active = 0;
@@ -92,11 +95,20 @@ void LEDs_SetSystemState(SystemState_t state)
 {
     if (current_state != state) {
         current_state = state;
-        if (state == SYSTEM_STATE_BOOT) {
-            curVal_StatusLed = 0;
+        switch(state){
+        case SYSTEM_STATE_BOOT:
+        	//Turn off all status led's
+        	curVal_StatusLed = 0;
         	*pCCR_Status = curVal_StatusLed;
+        	curVal_CommLed = 0;
+			*pCCR_Comm = curVal_CommLed;
+			curVal_AlarmLed = 0;
+			*pCCR_Alarm = curVal_AlarmLed;
+        	break;
+        case SYSTEM_STATE_STABLE:
+        	// When switching to STABLE, next blink will handle the toggle
+        	break;
         }
-        // When switching to STABLE, next blink will handle the toggle
     }
 }
 
