@@ -26,7 +26,7 @@
 #include "modbus_tcp.h"
 #include "io_core.h"
 #include "sysstatus.h"
-//#include "webserver.h"
+#include "webserver.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -123,7 +123,7 @@ int main(void)
   	  LEDs_SetSystemState(SYSTEM_STATE_BOOT);
   	  IO_Core_Init(&hadc1);
   	  ModbusTCP_Init();
-//  	  WebServer_Init();
+  	  WebServer_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -276,9 +276,8 @@ static void MX_ADC1_Init(void)
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
-  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
   sConfig.Rank = 5;
-  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
